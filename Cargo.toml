@@ -1,0 +1,17 @@
+[package]
+name = "rs"
+version = "0.1.0"
+edition = "2024"
+
+
+[profile.release]
+strip = true
+opt-level = "s"
+codegen-units = 1
+lto = true
+
+[dependencies]
+iced = "0.13.1"
+
+
+[build-dependencies]
