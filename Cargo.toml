@@ -1,6 +1,6 @@
 [package]
-name = "rs"
-version = "0.1.0"
+name = "pingRs"
+version = "1.0.0"
 edition = "2024"
 
 
@@ -11,7 +11,7 @@ codegen-units = 1
 lto = true
 
 [dependencies]
-iced = "0.13.1"
+clap = { version = "4.5.48", features = ["derive"] }
 
 
 [build-dependencies]
