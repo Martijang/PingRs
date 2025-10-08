@@ -32,8 +32,8 @@ fn send_request(address: &String, option_port: Option<i32>, ttl: Option<u32>)
 fn get_average(args: &String, port: Option<i32>, ttl: Option<u32>, echo: Option<u32>) 
 -> Result<Duration, Box<dyn std::error::Error>>
 {
-
     let mut count = match echo {Some(val) => val, None => 5};
+    let avg = count.clone();
     let mut average: Duration = Duration::ZERO;
         loop {
             if count == 0 {
@@ -43,7 +43,7 @@ fn get_average(args: &String, port: Option<i32>, ttl: Option<u32>, echo: Option<
             average += value;
             count -= 1;
         }
-    Ok(average / 5)
+    Ok(average / avg)
 }
 
 /// Ping tool written in rust
@@ -73,4 +73,5 @@ fn main(){
         Ok(duration) => println!("For {} \n Average is: {duration:?}", cli.address),
         Err(e) => eprintln!("Error: {}", e),
     }
+
 }
