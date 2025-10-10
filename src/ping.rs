@@ -9,7 +9,7 @@ struct Cli {
     /// target address 
     address: String,
 
-    ///Target port. Default is 80
+    ///Target port (default: 80)
     #[arg(short, long)]
     port: Option<i32>,
 
@@ -17,7 +17,7 @@ struct Cli {
     #[arg(short, long)]
     ttl: Option<u32>,
 
-    ///Amount of request to send. Default is 5
+    ///Amount of request to send 
     #[arg(short, long)]
     count: Option<u32>
 }
@@ -28,17 +28,17 @@ pub struct Ping{
     count: Option<u32>
 }
 
+//Public functions
 impl Ping{
     pub fn new() -> Self{
         let cli = Cli::parse();
         Ping { 
             address: cli.address, 
-            port: cli.port, 
+            port: cli.port,
             ttl: cli.ttl, 
             count: cli.count 
         }
     }
-
     pub fn run(&mut self){
         let mut cli = Ping::new();
 
@@ -47,7 +47,10 @@ impl Ping{
             Err(e) => eprintln!("Error: {}", e),
         }
     }
+}
 
+//Private functions
+impl Ping{
     fn get_average(&mut self) -> Result<Duration, Box<dyn std::error::Error>> {
         let mut count = match self.count {Some(val) => val, None => 5};
         let avg = count.clone();
@@ -61,10 +64,8 @@ impl Ping{
                 average += value;
                 count -= 1;
             }
-
         Ok(average / avg)
     }
-
     fn send_request(&mut self) -> Result<Duration, Box<dyn std::error::Error>>{
         let now = std::time::Instant::now();
 
@@ -87,9 +88,8 @@ impl Ping{
         duration,
         connect.ttl()?
         );
-        std::thread::sleep(std::time::Duration::from_secs(1));
 
+        std::thread::sleep(std::time::Duration::from_secs(1));
         Ok(duration)
     }
-
 }
