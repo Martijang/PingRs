@@ -3,6 +3,5 @@ mod ping;
 use ping::Ping;
 
 fn main(){
-    let mut ping = Ping::new();
-    ping.run();
+    let mut ping = Ping::new().run();
 }
