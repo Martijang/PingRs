@@ -9,7 +9,7 @@ struct Cli {
     /// target address 
     address: String,
 
-    ///Target port (default: 80)
+    ///Target port. Default is 80
     #[arg(short, long)]
     port: Option<i32>,
 
@@ -17,7 +17,7 @@ struct Cli {
     #[arg(short, long)]
     ttl: Option<u32>,
 
-    ///Amount of request to send 
+    ///Amount of request to send. Default is 5
     #[arg(short, long)]
     count: Option<u32>
 }
@@ -91,4 +91,5 @@ impl Ping{
 
         Ok(duration)
     }
+
 }
