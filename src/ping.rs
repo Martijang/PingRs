@@ -9,7 +9,7 @@ struct Cli {
     /// target address 
     address: String,
 
-    ///Target port. Default is 80
+    ///Target port (default: 80)
     #[arg(short, long)]
     port: Option<i32>,
 
@@ -17,7 +17,7 @@ struct Cli {
     #[arg(short, long)]
     ttl: Option<u32>,
 
-    ///Amount of request to send. Default if 5
+    ///Amount of request to send 
     #[arg(short, long)]
     count: Option<u32>
 }
@@ -81,15 +81,11 @@ impl Ping{
 
     fn send_request(&mut self) -> Result<Duration, Box<dyn std::error::Error>>{
         let now = std::time::Instant::now();
-        let port = match self.port{ Some(val) => val, None => 80 };
+        let port = self.port.unwrap_or(5);
         let url = format!("{}:{}", self.address, port);
 
         let connect = TcpStream::connect(&url)?;
-        if let Some(val) = self.ttl{
-            connect.set_ttl(val)?;
-        }else{
-            connect.set_ttl(117)?;
-        }
+        connect.set_ttl(self.ttl.unwrap_or(5))?;
 
         let resolved_addr:Vec<_> = url.to_socket_addrs()?.collect();
         let duration = now.elapsed();
@@ -105,4 +101,3 @@ impl Ping{
         Ok(duration)
     }
 }
-
