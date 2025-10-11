@@ -76,8 +76,8 @@ impl Ping{
             average: total / count,
             least: *durations.first().unwrap_or(&Duration::ZERO),
             max: *durations.last().unwrap_or(&Duration::ZERO),
-    })
-}
+        })
+    }
 
     fn send_request(&mut self) -> Result<Duration, Box<dyn std::error::Error>>{
         let now = std::time::Instant::now();
@@ -105,3 +105,4 @@ impl Ping{
         Ok(duration)
     }
 }
+
