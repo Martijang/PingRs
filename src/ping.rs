@@ -9,7 +9,7 @@ struct Cli {
     /// target address 
     address: String,
 
-    ///Target port (default: 80)
+    ///Target port. Default is 80
     #[arg(short, long)]
     port: Option<i32>,
 
@@ -17,10 +17,17 @@ struct Cli {
     #[arg(short, long)]
     ttl: Option<u32>,
 
-    ///Amount of request to send 
+    ///Amount of request to send. Default if 5
     #[arg(short, long)]
     count: Option<u32>
 }
+
+struct Durations{
+    average: Duration,
+    least: Duration,
+    max: Duration
+}
+
 pub struct Ping{
     address: String,
     port: Option<i32>,
@@ -43,7 +50,8 @@ impl Ping{
         let mut cli = Ping::new();
 
         match Ping::get_average(&mut cli) {
-            Ok(duration) => println!("For {} \n Average is: {duration:?}", cli.address),
+            Ok(duration) => println!("For {} \n Average: {:?} Least: {:?} Max:{:?}", 
+            cli.address, duration.average, duration.least, duration.max),
             Err(e) => eprintln!("Error: {}", e),
         }
     }
@@ -51,24 +59,28 @@ impl Ping{
 
 //Private functions
 impl Ping{
-    fn get_average(&mut self) -> Result<Duration, Box<dyn std::error::Error>> {
-        let mut count = match self.count {Some(val) => val, None => 5};
-        let avg = count.clone();
-        let mut average: Duration = Duration::ZERO;
+    fn get_average(&mut self) -> Result<Durations, Box<dyn std::error::Error>> {
+        let count = self.count.unwrap_or(5);
+        let mut durations: Vec<Duration> = Vec::new();
+        let mut total: Duration = Duration::ZERO;
 
-            loop {
-                if count == 0 {
-                    break;
-                }
-                let value = Ping::send_request(self)?;
-                average += value;
-                count -= 1;
-            }
-        Ok(average / avg)
-    }
+        for _ in 0..count {
+            let value = Ping::send_request(self)?;
+            total += value;
+            durations.push(value);
+        }
+
+        durations.sort();
+
+        Ok(Durations {
+            average: total / count,
+            least: *durations.first().unwrap_or(&Duration::ZERO),
+            max: *durations.last().unwrap_or(&Duration::ZERO),
+    })
+}
+
     fn send_request(&mut self) -> Result<Duration, Box<dyn std::error::Error>>{
         let now = std::time::Instant::now();
-
         let port = match self.port{ Some(val) => val, None => 80 };
         let url = format!("{}:{}", self.address, port);
 
