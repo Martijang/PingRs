@@ -81,11 +81,11 @@ impl Ping{
 
     fn send_request(&mut self) -> Result<Duration, Box<dyn std::error::Error>>{
         let now = std::time::Instant::now();
-        let port = self.port.unwrap_or(5);
+        let port = self.port.unwrap_or(80);
         let url = format!("{}:{}", self.address, port);
 
         let connect = TcpStream::connect(&url)?;
-        connect.set_ttl(self.ttl.unwrap_or(5))?;
+        connect.set_ttl(self.ttl.unwrap_or(117))?;
 
         let resolved_addr:Vec<_> = url.to_socket_addrs()?.collect();
         let duration = now.elapsed();
