@@ -11,7 +11,7 @@ struct Cli {
 
     ///Target port (default: 80)
     #[arg(short, long)]
-    port: Option<i32>,
+    port: Option<u16>,
 
     ///Amount of TTL(Time To Live). Default is 117
     #[arg(short, long)]
@@ -30,7 +30,7 @@ struct Durations{
 
 pub struct Ping{
     address: String,
-    port: Option<i32>,
+    port: Option<u16>,
     ttl: Option<u32>,
     count: Option<u32>
 }
@@ -47,11 +47,9 @@ impl Ping{
         }
     }
     pub fn run(&mut self){
-        let mut cli = Ping::new();
-
-        match Ping::get_average(&mut cli) {
+        match self.get_average() {
             Ok(duration) => println!("For {} \n Average: {:?} Least: {:?} Max:{:?}", 
-            cli.address, duration.average, duration.least, duration.max),
+            self.address, duration.average, duration.least, duration.max),
             Err(e) => eprintln!("Error: {}", e),
         }
     }
@@ -65,7 +63,7 @@ impl Ping{
         let mut total: Duration = Duration::ZERO;
 
         for _ in 0..count {
-            let value = Ping::send_request(self)?;
+            let value = self.send_request()?;
             total += value;
             durations.push(value);
         }
@@ -79,7 +77,7 @@ impl Ping{
         })
     }
 
-    fn send_request(&mut self) -> Result<Duration, Box<dyn std::error::Error>>{
+    fn send_request(&self) -> Result<Duration, Box<dyn std::error::Error>>{
         let now = std::time::Instant::now();
         let port = self.port.unwrap_or(80);
         let url = format!("{}:{}", self.address, port);
